@@ -3,6 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Dimensions,
   Image,
@@ -13,7 +14,6 @@ import {
   Text,
   TextInput,
   View,
-  ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -38,7 +38,7 @@ export default function LoginScreen() {
       await signInWithGoogle();
       router.replace("/username-setup");
     } catch {
-      Alert.alert("Error", "Google login mein problem aayi. Dobara try karo.");
+      Alert.alert("Error", "Google login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -46,7 +46,7 @@ export default function LoginScreen() {
 
   const handleSendOTP = async () => {
     if (phone.length < 10) {
-      Alert.alert("Galat Number", "Sahi phone number daalo (10 digits)");
+      Alert.alert("Invalid Number", "Please enter a valid 10-digit phone number.");
       return;
     }
     setLoading(true);
@@ -54,7 +54,7 @@ export default function LoginScreen() {
       await sendPhoneOTP(`+91${phone}`);
       setStep("otp");
     } catch {
-      Alert.alert("Error", "OTP bhejne mein problem. Dobara try karo.");
+      Alert.alert("Error", "Failed to send OTP. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -62,7 +62,7 @@ export default function LoginScreen() {
 
   const handleVerifyOTP = async () => {
     if (otp.length < 4) {
-      Alert.alert("Galat OTP", "Sahi OTP daalo");
+      Alert.alert("Invalid OTP", "Please enter a valid OTP.");
       return;
     }
     setLoading(true);
@@ -70,7 +70,7 @@ export default function LoginScreen() {
       await verifyPhoneOTP(otp);
       router.replace("/username-setup");
     } catch {
-      Alert.alert("Error", "OTP galat hai. Dobara try karo.");
+      Alert.alert("Invalid OTP", "The OTP you entered is incorrect. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -91,7 +91,10 @@ export default function LoginScreen() {
       />
 
       <KeyboardAvoidingView
-        style={[styles.content, { paddingBottom: insets.bottom + 32, paddingTop: insets.top + 20 }]}
+        style={[
+          styles.content,
+          { paddingBottom: insets.bottom + 32, paddingTop: insets.top + 20 },
+        ]}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View style={styles.header}>
@@ -103,19 +106,16 @@ export default function LoginScreen() {
             />
           </View>
           <Text style={styles.title}>CarKing</Text>
-          <Text style={styles.tagline}>Apni dream car collection banao</Text>
+          <Text style={styles.tagline}>Build your dream car collection</Text>
         </View>
 
         <View style={styles.formContainer}>
           {step === "main" && (
             <>
-              <Text style={styles.welcomeText}>Welcome! Shuru karo abhi</Text>
+              <Text style={styles.welcomeText}>Welcome! Get started</Text>
 
               <Pressable
-                style={({ pressed }) => [
-                  styles.googleButton,
-                  pressed && styles.pressed,
-                ]}
+                style={({ pressed }) => [styles.googleButton, pressed && styles.pressed]}
                 onPress={handleGoogleLogin}
                 disabled={loading}
               >
@@ -124,27 +124,24 @@ export default function LoginScreen() {
                 ) : (
                   <>
                     <AntDesign name="google" size={20} color="#fff" style={styles.btnIcon} />
-                    <Text style={styles.googleButtonText}>Google se Login Karo</Text>
+                    <Text style={styles.googleButtonText}>Continue with Google</Text>
                   </>
                 )}
               </Pressable>
 
               <View style={styles.dividerRow}>
                 <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>ya</Text>
+                <Text style={styles.dividerText}>or</Text>
                 <View style={styles.dividerLine} />
               </View>
 
               <Pressable
-                style={({ pressed }) => [
-                  styles.phoneButton,
-                  pressed && styles.pressed,
-                ]}
+                style={({ pressed }) => [styles.phoneButton, pressed && styles.pressed]}
                 onPress={() => setStep("phone")}
                 disabled={loading}
               >
                 <Feather name="phone" size={20} color="#D4AF37" style={styles.btnIcon} />
-                <Text style={styles.phoneButtonText}>Phone se Login Karo</Text>
+                <Text style={styles.phoneButtonText}>Continue with Phone</Text>
               </Pressable>
             </>
           )}
@@ -153,10 +150,10 @@ export default function LoginScreen() {
             <>
               <Pressable style={styles.backBtn} onPress={() => setStep("main")}>
                 <Feather name="arrow-left" size={20} color="#888" />
-                <Text style={styles.backText}>Wapas Jao</Text>
+                <Text style={styles.backText}>Go Back</Text>
               </Pressable>
 
-              <Text style={styles.welcomeText}>Apna number daalo</Text>
+              <Text style={styles.welcomeText}>Enter your phone number</Text>
 
               <View style={styles.phoneInputRow}>
                 <View style={styles.countryCode}>
@@ -186,7 +183,7 @@ export default function LoginScreen() {
                 {loading ? (
                   <ActivityIndicator color="#0a0a0a" />
                 ) : (
-                  <Text style={styles.otpSendText}>OTP Bhejo</Text>
+                  <Text style={styles.otpSendText}>Send OTP</Text>
                 )}
               </Pressable>
             </>
@@ -196,11 +193,11 @@ export default function LoginScreen() {
             <>
               <Pressable style={styles.backBtn} onPress={() => setStep("phone")}>
                 <Feather name="arrow-left" size={20} color="#888" />
-                <Text style={styles.backText}>Wapas Jao</Text>
+                <Text style={styles.backText}>Go Back</Text>
               </Pressable>
 
-              <Text style={styles.welcomeText}>OTP daalo</Text>
-              <Text style={styles.otpSubtext}>+91 {phone} pe OTP bheja gaya</Text>
+              <Text style={styles.welcomeText}>Enter OTP</Text>
+              <Text style={styles.otpSubtext}>OTP sent to +91 {phone}</Text>
 
               <TextInput
                 style={styles.otpInput}
@@ -226,7 +223,7 @@ export default function LoginScreen() {
                 {loading ? (
                   <ActivityIndicator color="#0a0a0a" />
                 ) : (
-                  <Text style={styles.otpSendText}>Verify Karo</Text>
+                  <Text style={styles.otpSendText}>Verify</Text>
                 )}
               </Pressable>
             </>

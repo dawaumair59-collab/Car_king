@@ -2,7 +2,6 @@ import { router } from "expo-router";
 import { useEffect, useRef } from "react";
 import {
   Animated,
-  Dimensions,
   Image,
   StyleSheet,
   Text,
@@ -10,8 +9,6 @@ import {
 } from "react-native";
 
 import { useAuth } from "@/context/AuthContext";
-
-const { width } = Dimensions.get("window");
 
 export default function SplashScreen() {
   const { user, username, loading } = useAuth();
@@ -78,9 +75,7 @@ export default function SplashScreen() {
 
     const timer = setTimeout(() => {
       dotLoop.stop();
-      if (!loading) {
-        navigate();
-      }
+      if (!loading) navigate();
     }, 2200);
 
     return () => clearTimeout(timer);
@@ -88,9 +83,7 @@ export default function SplashScreen() {
 
   useEffect(() => {
     if (!loading) {
-      const timer = setTimeout(() => {
-        navigate();
-      }, 2400);
+      const timer = setTimeout(() => navigate(), 2400);
       return () => clearTimeout(timer);
     }
   }, [loading, user, username]);
@@ -107,20 +100,12 @@ export default function SplashScreen() {
 
   return (
     <View style={styles.container}>
-      <Animated.View
-        style={[
-          styles.glow,
-          { opacity: glowOpacity },
-        ]}
-      />
+      <Animated.View style={[styles.glow, { opacity: glowOpacity }]} />
 
       <Animated.View
         style={[
           styles.logoWrapper,
-          {
-            opacity: logoOpacity,
-            transform: [{ scale: logoScale }],
-          },
+          { opacity: logoOpacity, transform: [{ scale: logoScale }] },
         ]}
       >
         <Image
@@ -135,7 +120,7 @@ export default function SplashScreen() {
       </Animated.Text>
 
       <Animated.Text style={[styles.subtitle, { opacity: subtitleOpacity }]}>
-        India Ka #1 Car Collection Game
+        India's #1 Car Collection Game
       </Animated.Text>
 
       <View style={styles.dotsRow}>

@@ -1,13 +1,12 @@
 import { Feather } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   Animated,
-  Dimensions,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -19,8 +18,6 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useAuth } from "@/context/AuthContext";
-
-const { width } = Dimensions.get("window");
 
 const SUGGESTIONS = ["RacingKing", "TurboRaja", "SpeedStar", "CarMaestro", "V8Veer"];
 
@@ -50,17 +47,17 @@ export default function UsernameSetupScreen() {
     if (trimmed.length < 3) {
       triggerShake();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert("Chhota naam!", "Username kam se kam 3 characters ka hona chahiye.");
+      Alert.alert("Too Short!", "Username must be at least 3 characters.");
       return;
     }
     if (trimmed.length > 20) {
       triggerShake();
-      Alert.alert("Bada naam!", "Username zyada se zyada 20 characters ka hona chahiye.");
+      Alert.alert("Too Long!", "Username must be at most 20 characters.");
       return;
     }
     if (!/^[a-zA-Z0-9_]+$/.test(trimmed)) {
       triggerShake();
-      Alert.alert("Galat naam!", "Sirf letters, numbers aur underscore use karo.");
+      Alert.alert("Invalid Username!", "Only letters, numbers and underscores allowed.");
       return;
     }
 
@@ -70,7 +67,7 @@ export default function UsernameSetupScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.replace("/(tabs)");
     } catch {
-      Alert.alert("Error", "Username save nahi hua. Dobara try karo.");
+      Alert.alert("Error", "Failed to save username. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -94,9 +91,9 @@ export default function UsernameSetupScreen() {
           <View style={styles.iconCircle}>
             <Feather name="user" size={32} color="#D4AF37" />
           </View>
-          <Text style={styles.titleMain}>Apna naam batao</Text>
+          <Text style={styles.titleMain}>Choose your username</Text>
           <Text style={styles.subtitle}>
-            CarKing community mein yahi naam se jaane jaoge
+            This is how you'll be known in the CarKing community
           </Text>
         </View>
 
@@ -110,7 +107,7 @@ export default function UsernameSetupScreen() {
                 username.length > 0 && !isValid && styles.inputError,
                 isValid && styles.inputValid,
               ]}
-              placeholder="jaise: SpeedKing99"
+              placeholder="e.g., SpeedKing99"
               placeholderTextColor="#444"
               value={username}
               onChangeText={(t) => setUsername(t.replace(/[^a-zA-Z0-9_]/g, ""))}
@@ -125,31 +122,23 @@ export default function UsernameSetupScreen() {
 
           <View style={styles.hintRow}>
             {username.length > 0 && (
-              <Text
-                style={[
-                  styles.hintText,
-                  isValid ? styles.hintGreen : styles.hintRed,
-                ]}
-              >
+              <Text style={[styles.hintText, isValid ? styles.hintGreen : styles.hintRed]}>
                 {isValid
-                  ? "✓ Sahi lag raha hai!"
+                  ? "✓ Looks good!"
                   : username.length < 3
-                  ? `${3 - username.length} aur characters chahiye`
-                  : "Bahut lamba ho gaya!"}
+                  ? `${3 - username.length} more characters needed`
+                  : "Too long!"}
               </Text>
             )}
             <Text style={styles.charCount}>{username.length}/20</Text>
           </View>
 
-          <Text style={styles.suggestLabel}>Suggestions:</Text>
+          <Text style={styles.suggestLabel}>Suggestions</Text>
           <View style={styles.suggestionsRow}>
             {SUGGESTIONS.map((s) => (
               <Pressable
                 key={s}
-                style={({ pressed }) => [
-                  styles.suggestion,
-                  pressed && styles.pressed,
-                ]}
+                style={({ pressed }) => [styles.suggestion, pressed && styles.pressed]}
                 onPress={() => {
                   setUsername(s);
                   Haptics.selectionAsync();
@@ -174,7 +163,7 @@ export default function UsernameSetupScreen() {
             <ActivityIndicator color="#0a0a0a" />
           ) : (
             <>
-              <Text style={styles.confirmText}>Aage Badho</Text>
+              <Text style={styles.confirmText}>Continue</Text>
               <Feather name="arrow-right" size={20} color="#0a0a0a" />
             </>
           )}
@@ -266,12 +255,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "500",
   },
-  hintGreen: {
-    color: "#22c55e",
-  },
-  hintRed: {
-    color: "#ef4444",
-  },
+  hintGreen: { color: "#22c55e" },
+  hintRed: { color: "#ef4444" },
   charCount: {
     color: "#555",
     fontSize: 12,
